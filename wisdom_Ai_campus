@@ -1,0 +1,42 @@
+# Wisdom AI Campus - E-Learning Recommendation System
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Sample Courses Data
+courses = pd.DataFrame({
+    'course_id': [1, 2, 3, 4, 5],
+    'title': [
+        'Python for Beginners',
+        'Machine Learning A-Z',
+        'Deep Learning with TensorFlow',
+        'Web Development with Django',
+        'NLP with Transformers'
+    ],
+    'tags': [
+        'python programming basics variables loops',
+        'machine learning scikit-learn classification regression',
+        'deep learning tensorflow keras neural networks',
+        'django web development rest api python',
+        'nlp transformers bert text classification python'
+    ]
+})
+
+# Student Profile
+student_interest = "python machine learning deep learning"
+
+# TF-IDF + Cosine Similarity
+tfidf = TfidfVectorizer()
+course_matrix = tfidf.fit_transform(courses['tags'])
+student_vector = tfidf.transform([student_interest])
+
+scores = cosine_similarity(student_vector, course_matrix)[0]
+courses['recommendation_score'] = (scores * 100).round(2)
+
+result = courses.sort_values('recommendation_score', ascending=False)
+
+print("🎓 Recommended Courses for You:")
+print("="*40)
+for _, row in result.iterrows():
+    print(f"✅ {row['title']} — Score: {row['recommendation_score']}%")
