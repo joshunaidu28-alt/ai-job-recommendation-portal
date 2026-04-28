@@ -1,0 +1,44 @@
+# AI-Powered Job Recommendation Portal
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Sample Data
+jobs = pd.DataFrame({
+    'job_id': [1, 2, 3, 4, 5],
+    'title': [
+        'Python Developer',
+        'Data Scientist',
+        'ML Engineer',
+        'Web Developer',
+        'AI Researcher'
+    ],
+    'skills_required': [
+        'python django flask rest api',
+        'python machine learning pandas numpy scikit-learn',
+        'python tensorflow keras deep learning',
+        'javascript react html css nodejs',
+        'python nlp transformers bert research'
+    ]
+})
+
+# Job Seeker Profile
+seeker_profile = "python machine learning scikit-learn flask"
+
+# TF-IDF Vectorization
+tfidf = TfidfVectorizer()
+job_matrix = tfidf.fit_transform(jobs['skills_required'])
+seeker_vector = tfidf.transform([seeker_profile])
+
+# Cosine Similarity
+similarity_scores = cosine_similarity(seeker_vector, job_matrix)[0]
+jobs['match_score'] = (similarity_scores * 100).round(2)
+
+# Top Recommendations
+recommended = jobs.sort_values('match_score', ascending=False)
+
+print("🎯 Job Recommendations for You:")
+print("="*40)
+for _, row in recommended.iterrows():
+    print(f"✅ {row['title']} — Match: {row['match_score']}%")
